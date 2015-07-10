@@ -29,9 +29,8 @@ module.exports = {
     },
     post: function (req, res) {
       var args = [req.body.username, req.body.message, req.body.roomname]
-      User.count({username: req.body.username}).then(function(number){
-      console.log('in post')
-        if (number === 0) {
+      User.find({where: {username:req.body.username}}).then(function(user){
+        if (user === null) {
           var newUser = User.build({username:req.body.username})
           newUser.save().then(function(){
             User.find({username: args[0]}).then(function(user){
@@ -43,7 +42,7 @@ module.exports = {
           })
         } else {
           User.find({username: args[0]}).then(function(user){
-            var newMessage = Message.build({userid:user.id, message: args[1], roomname: args[2]})
+            var newMessage = Message.build({message: args[1], roomname: args[2]})
             newMessage.save().then(function(){
               res.end();
             })
